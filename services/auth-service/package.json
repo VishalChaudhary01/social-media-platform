@@ -13,13 +13,20 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "bcryptjs": "^3.0.2",
+    "bullmq": "^5.46.1",
+    "cookie-parser": "^1.4.7",
+    "crypto": "^1.0.1",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",
+    "ioredis": "^5.6.0",
     "jsonwebtoken": "^9.0.2",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.0",
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",

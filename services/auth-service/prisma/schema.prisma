@@ -9,10 +9,25 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(cuid())
-  email       String      @unique
-  name        String
-  password    String
-  profile_pic String
-  creacte_at  DateTime
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String
+  password           String
+  profilePic         String?
+  isVerified         Boolean   @default(false)
+  createdAt          DateTime   @default(now())
+}
+
+model VerificationToken {
+  token      String
+  identifier String
+  type       TokenType
+  expiresAt  DateTime
+  updatedAt  DateTime  @updatedAt
+  @@unique([token, identifier])
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  RESET_PASSWORD
 }
