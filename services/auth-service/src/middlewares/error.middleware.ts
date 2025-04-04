@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { NODE_ENV } from '../config/env';
+import { ZodError } from 'zod';
 
 export class ErrorResponse extends Error {
   public statusCode: number;
@@ -16,12 +17,43 @@ export const errorMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  let message = err.message || 'Internal server error';
-
   if (NODE_ENV === 'development') {
     console.error('Error: ', err);
+    console.error('Error Stack:', err.stack);
   }
 
-  res.status(statusCode).json({ success: false, message });
+  if (err instanceof ErrorResponse) {
+    res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+    return;
+  }
+
+  if (err instanceof ZodError) {
+    const formattedErrors = err.errors.map((e) => ({
+      path: e.path.join('.'),
+      message: e.message,
+    }));
+
+    res.status(400).json({
+      success: false,
+      message: 'Input Validation error',
+      errors: formattedErrors,
+    });
+    return;
+  }
+
+  if ((err as any).code === 'ECONNREFUSED') {
+    res.status(503).json({
+      success: false,
+      message: 'Service unavailable, Please try again later.',
+    });
+    return;
+  }
+
+  // Default error
+  const message = res.locals.errorMessage || 'Internal server error';
+  res.status(500).json({ success: false, message });
+  return;
 };
